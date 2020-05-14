@@ -1,0 +1,54 @@
+
+exports.up = function(knex) {
+  return knex.schema
+    .createTable('recipes', tbl => {
+        tbl.increments();
+        tbl.string('recipe_name', 255).notNullable();
+    })
+
+    .createTable('ingredients', tbl => {
+        tbl.increments();
+        tbl.string('ingredient_name', 255).notNullable().unique();
+    })
+
+    .createTable('recipe_ingredient', tbl => {
+        tbl.increments();
+
+        tbl.integer("recipe_id")
+           .unsigned()
+           .notNullable()
+           .references("recipes.id") // or .references('id') then add .inTable("recipes")
+           .onUpdate("CASCADE") // RESTRICT, DO NOTHING, SET NULL, CASCADE
+           .onDelete("RESTRICT");
+
+        tbl.integer("ingredient_id")
+           .unsigned()
+           .notNullable()
+           .references("ingredients.id") // or .references('id') then add .inTable("recipes")
+           .onUpdate("CASCADE") // RESTRICT, DO NOTHING, SET NULL, CASCADE
+           .onDelete("RESTRICT");
+
+        tbl.integer('quantity', 255).notNullable();
+    })
+
+    .createTable('instructions', tbl => {
+        tbl.increments();
+        tbl.integer('step_number', 255).unsigned().notNullable();
+        tbl.text('instructions').notNullable();
+
+        tbl.integer("recipe_id")
+           .unsigned()
+           .notNullable()
+           .references("recipes.id") // or .references('id') then add .inTable("recipes")
+           .onUpdate("CASCADE") // RESTRICT, DO NOTHING, SET NULL, CASCADE
+           .onDelete("RESTRICT");
+    })
+};
+
+exports.down = function(knex) {
+  return knex.schema
+    .dropTableIfExists('instructions')
+    .dropTableIfExists('recipe_ingredient')
+    .dropTableIfExists('ingredients')
+    .dropTableIfExists('recipes')
+};
