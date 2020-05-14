@@ -29,19 +29,22 @@ exports.up = function(knex) {
            .onDelete("RESTRICT");
 
         tbl.integer('quantity', 255).notNullable();
+        tbl.string('unit', 255)
     })
 
     .createTable('instructions', tbl => {
         tbl.increments();
-        tbl.integer('step_number', 255).unsigned().notNullable();
-        tbl.text('instructions').notNullable();
-
+        
         tbl.integer("recipe_id")
            .unsigned()
            .notNullable()
            .references("recipes.id") // or .references('id') then add .inTable("recipes")
            .onUpdate("CASCADE") // RESTRICT, DO NOTHING, SET NULL, CASCADE
            .onDelete("RESTRICT");
+
+        tbl.integer('step_number', 255).unsigned().notNullable();
+        tbl.text('instructions').notNullable();
+
     })
 };
 
